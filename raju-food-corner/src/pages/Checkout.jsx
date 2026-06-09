@@ -54,7 +54,7 @@ const Checkout = () => {
     setTimeout(() => {
       dispatch({ type: 'CLEAR' });
       setLoading(false);
-      window.open(`https://wa.me/919917326188?text=${encodeURIComponent(message)}`, '_blank');
+      window.open(`https://wa.me/916399940996?text=${encodeURIComponent(message)}`, '_blank');
       navigate('/order-success');
     }, 1000);
   };

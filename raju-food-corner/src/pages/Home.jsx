@@ -169,25 +169,7 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Hero circle image */}
-          <div className="hidden md:flex justify-center">
-            <div className="relative">
-              <div className="w-80 h-80 rounded-full overflow-hidden border-4 border-orange-400/40 shadow-2xl">
-                <img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&q=90" alt="Dosa" className="w-full h-full object-cover" />
-              </div>
-              <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-lg px-3 py-2 flex items-center gap-2">
-                <span className="text-yellow-500 text-lg">⭐</span>
-                <div>
-                  <p className="text-xs font-black text-gray-800">Top Rated</p>
-                  <p className="text-[10px] text-gray-400">South Indian</p>
-                </div>
-              </div>
-              <div className="absolute -bottom-4 -left-4 bg-gray-900 text-white rounded-2xl shadow-lg px-3 py-2">
-                <p className="text-xs font-bold">🚚 Free Delivery</p>
-                <p className="text-[10px] text-gray-400">On all orders</p>
-              </div>
-            </div>
-          </div>
+          {/* Hero circle image — hidden on all screens */}
         </div>
       </section>
 
