@@ -2,6 +2,56 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
+// ── Defined OUTSIDE to prevent remount on every keystroke ──
+
+const StepBadge = ({ n }) => (
+  <span className="w-6 h-6 bg-gray-900 text-white rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0">
+    {n}
+  </span>
+);
+
+const Field = ({ label, name, type = 'text', placeholder, rows, value, onChange, error }) => (
+  <div>
+    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+      {label}
+    </label>
+    {rows ? (
+      <textarea
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        rows={rows}
+        className={`w-full px-4 py-3 rounded-xl border text-sm resize-none focus:outline-none focus:ring-2 focus:ring-gray-300 transition ${
+          error ? 'border-orange-300 bg-orange-50' : 'border-gray-200 bg-white'
+        }`}
+      />
+    ) : (
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        maxLength={name === 'mobile' ? 10 : undefined}
+        className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 transition ${
+          error ? 'border-orange-300 bg-orange-50' : 'border-gray-200 bg-white'
+        }`}
+      />
+    )}
+    {error && (
+      <p className="text-orange-600 text-xs mt-1 flex items-center gap-1">
+        <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+        </svg>
+        {error}
+      </p>
+    )}
+  </div>
+);
+
+// ── Main component ──
+
 const Checkout = () => {
   const { cart, totalAmount, dispatch } = useCart();
   const navigate = useNavigate();
@@ -31,8 +81,8 @@ const Checkout = () => {
   };
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    if (errors[e.target.name]) setErrors({ ...errors, [e.target.name]: '' });
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    if (errors[e.target.name]) setErrors(prev => ({ ...prev, [e.target.name]: '' }));
   };
 
   const handlePlaceOrder = () => {
@@ -54,48 +104,10 @@ const Checkout = () => {
     setTimeout(() => {
       dispatch({ type: 'CLEAR' });
       setLoading(false);
-      window.open(`https://wa.me/916399940996?text=${encodeURIComponent(message)}`, '_blank');
+      window.open(`https://wa.me/919917326188?text=${encodeURIComponent(message)}`, '_blank');
       navigate('/order-success');
     }, 1000);
   };
-
-  const Field = ({ label, name, type = 'text', placeholder, rows }) => (
-    <div>
-      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">{label}</label>
-      {rows ? (
-        <textarea
-          name={name}
-          value={form[name]}
-          onChange={handleChange}
-          placeholder={placeholder}
-          rows={rows}
-          className={`w-full px-4 py-3 rounded-xl border text-sm resize-none focus:outline-none focus:ring-2 focus:ring-gray-300 transition ${errors[name] ? 'border-orange-300 bg-orange-50' : 'border-gray-200 bg-white'}`}
-        />
-      ) : (
-        <input
-          type={type}
-          name={name}
-          value={form[name]}
-          onChange={handleChange}
-          placeholder={placeholder}
-          maxLength={name === 'mobile' ? 10 : undefined}
-          className={`w-full px-4 py-3 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 transition ${errors[name] ? 'border-orange-300 bg-orange-50' : 'border-gray-200 bg-white'}`}
-        />
-      )}
-      {errors[name] && (
-        <p className="text-orange-600 text-xs mt-1 flex items-center gap-1">
-          <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-          {errors[name]}
-        </p>
-      )}
-    </div>
-  );
-
-  const StepBadge = ({ n }) => (
-    <span className="w-6 h-6 bg-gray-900 text-white rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0">{n}</span>
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -108,16 +120,39 @@ const Checkout = () => {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 grid md:grid-cols-5 gap-6">
 
-        {/* Left */}
+        {/* Left: Form */}
         <div className="md:col-span-3 flex flex-col gap-5">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <p className="font-bold text-gray-800 mb-4 flex items-center gap-2 text-sm">
               <StepBadge n="1" /> Delivery Details
             </p>
             <div className="flex flex-col gap-4">
-              <Field label="Full Name" name="name" placeholder="Enter your full name" />
-              <Field label="Mobile Number" name="mobile" type="tel" placeholder="10-digit mobile number" />
-              <Field label="Delivery Address" name="address" placeholder="House No., Street, Area, City..." rows={3} />
+              <Field
+                label="Full Name"
+                name="name"
+                placeholder="Enter your full name"
+                value={form.name}
+                onChange={handleChange}
+                error={errors.name}
+              />
+              <Field
+                label="Mobile Number"
+                name="mobile"
+                type="tel"
+                placeholder="10-digit mobile number"
+                value={form.mobile}
+                onChange={handleChange}
+                error={errors.mobile}
+              />
+              <Field
+                label="Delivery Address"
+                name="address"
+                placeholder="House No., Street, Area, City..."
+                rows={3}
+                value={form.address}
+                onChange={handleChange}
+                error={errors.address}
+              />
             </div>
           </div>
 
@@ -138,7 +173,7 @@ const Checkout = () => {
           </div>
         </div>
 
-        {/* Right */}
+        {/* Right: Summary */}
         <div className="md:col-span-2 flex flex-col gap-4">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <p className="font-bold text-gray-800 mb-4 flex items-center gap-2 text-sm">
@@ -168,9 +203,7 @@ const Checkout = () => {
             onClick={handlePlaceOrder}
             disabled={loading}
             className={`w-full py-4 rounded-xl font-bold text-sm shadow-sm transition-all duration-200 flex items-center justify-center gap-2 ${
-              loading
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600 text-white hover:-translate-y-0.5'
+              loading ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600 text-white hover:-translate-y-0.5'
             }`}
           >
             {loading ? (
